@@ -79,14 +79,14 @@ class kamailio:
             if "sip:conferencia@acme.pt" in KSR.pv.get("$tu"):
                 KSR.pv.sets("$ru", "sip:conferencia@127.0.0.1:5090")
                 KSR.info("Calling to conference. Forwarding call to: " + KSR.pv.get("$ru") + "\n")
-                set_state(KSR.pv.get("$fu"), 2)
+                self.set_state(KSR.pv.get("$fu"), 2)
                 KSR.tm.t_relay()
 
             # Check if the target user is registered
             if KSR.registrar.lookup("location") == 1:
                 KSR.info("User registered. Forwarding call to: " + KSR.pv.get("$ru") + "\n")
                 
-                if get_state(KSR.pv.get("$tu")) == 1:
+                if self.get_state(KSR.pv.get("$tu")) == 1:
                     KSR.info(KSR.pv.get("$ru") + " is on a call. \n")
                     KSR.pv.sets("$ru", "sip:busyann@127.0.0.1:5080")
                     KSR.info("Calling to announcement server. Forwarding call to: " + KSR.pv.get("$ru") + "\n")
@@ -95,14 +95,15 @@ class kamailio:
                     return 1
 
                 
-                if get_state(KSR.pv.get("$tu")) == 2:
+                if self.get_state(KSR.pv.get("$tu")) == 2:
                     KSR.info(KSR.pv.get("$ru") + " is on a Conference.\n")
                     KSR.pv.sets("$ru", "sip:inconference@127.0.0.1:5080")
                     KSR.info("Calling to announcement server. Forwarding call to: " + KSR.pv.get("$ru") + "\n")
                     KSR.forward() 
                     KSR.tm.t_relay()
                     return 1
-                
+                self.set_state(KSR.pv.get("$fu"), 1)
+                self.set_state(KSR.pv.get("$tu"), 1)
                 KSR.tm.t_relay()  # Forward the call
             else:
                 KSR.info("User not registered: " + KSR.pv.get("$tu") + "\n")
@@ -112,6 +113,8 @@ class kamailio:
         # Handle BYE (DEREGISTER or call termination)
         if (msg.Method == "BYE"):
             KSR.info("BYE R-URI: " + KSR.pv.get("$ru") + "\n")
+            self.set_state(KSR.pv.get("$tu"), 0)
+            self.set_state(KSR.pv.get("$ru"), 0)
             if KSR.registrar.remove("location", KSR.pv.get("$tu")):
                 KSR.info("Deregistration successful for: " + KSR.pv.get("$tu") + "\n")
                 KSR.sl.send_reply(200, "OK")
