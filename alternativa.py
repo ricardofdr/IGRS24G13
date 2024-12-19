@@ -54,7 +54,7 @@ class kamailio:
             # Save registration for valid users
             if KSR.registrar.save('location', 0):
                 KSR.info("Registration saved for " + KSR.pv.get("$tu") + "\n")
-                set_state(KSR.pv.get("$tu"), 0)
+                self.set_state(KSR.pv.get("$tu"), 0)
                 KSR.sl.send_reply(200, "OK")
             else:
                 KSR.info("Registration failed for " + KSR.pv.get("$tu") + "\n")
@@ -76,9 +76,9 @@ class kamailio:
                 return 1
             
             # Conference call
-            if "sip:conferencia@acme.pt" in KSR.pv.get("$tu"):
-                KSR.pv.sets("$ru", "sip:conferencia@127.0.0.1:5090")
-                KSR.info("Calling to conference. Forwarding call to: " + KSR.pv.get("$ru") + "\n")
+            if "sip:announce@acme.pt" in KSR.pv.get("$tu"):
+                KSR.pv.sets("$ru", "sip:announce@127.0.0.1:5090")
+                KSR.info("Calling to announce. Forwarding call to: " + KSR.pv.get("$ru") + "\n")
                 self.set_state(KSR.pv.get("$fu"), 2)
                 KSR.tm.t_relay()
 
