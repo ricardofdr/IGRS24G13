@@ -10,6 +10,7 @@ def dumpObj(obj):           # List all obj attributes and methods
             KSR.info("\n")
     return 1
 
+#test
 def mod_init():
     KSR.info("===== from Python mod init\n")
     return kamailio()
